@@ -156,7 +156,7 @@
             {% endfor %}
             </div>
         </div>
-    <input input class="btn btn-success" type="button" id="add_more" value="+">
+    <input class="btn btn-success" type="button" id="add_more" value="+">
     
     <br><br>
     <h3> Genre(s) </h3>
@@ -236,9 +236,7 @@
         form_idx = $('#id_form-TOTAL_FORMS').val();
         form_idx = parseInt(form_idx) + 1;
         var parentDiv = $('<div class="contribution-form" id="contribution-form-' + form_idx + '"></div>');
-        var h5Element = $('<h5>Contributor ' + ++numContributors + '</h5>');
-        parentDiv.append(h5Element)
-        // Unique ids for autocomplete widgets
+        // Duplicate form with unique ids for autocomplete widgets
         var new_form = $($('.contribution-form').html().replace(/__prefix__/g, form_idx)
             .replace(/id_form-0-person_from_db/g, 'id_form-0-person_from_db-' + form_idx)
             .replace(/id_form-0-location/g, 'id_form-0-location-' + form_idx)
@@ -247,7 +245,7 @@
             .replace(/add-location-input/g, 'add-location-input-' + form_idx)
             .replace(/add-location-button/g, 'add-location-button-' + form_idx));
         new_form.find('span[data-select2-id]').attr('data-select2-id', form_idx);
-        // Listen for the new contribution form checkbox to be checked
+        // Listener for the new contribution form checkbox to be checked
         new_form.find('.person-check').on('change', function() {
             var cur_form = $(this).closest('.contribution-form');
             var isChecked = $(this).prop('checked');
@@ -261,24 +259,36 @@
             locationInput.prop('disabled', !isChecked);
             locationButton.prop('disabled', !isChecked);
         });
-
-        // Initialize new person input to disabled
+        // Add delete button to contribution form
+        const deleteButton = document.createElement('input');
+        deleteButton.setAttribute('class', 'btn btn-danger');
+        deleteButton.setAttribute('type', 'button');
+        deleteButton.setAttribute('id', 'delete_form');
+        deleteButton.setAttribute('value', '-');
+        deleteButton.setAttribute('aria-label', 'Delete form below.');
+        deleteButton.addEventListener('click', function() {
+            form_idx = $('#id_form-TOTAL_FORMS').val();
+            parentDiv.remove();
+            form_idx = parseInt(form_idx) - 1;
+            numContributors--;
+            $('#id_form-TOTAL_FORMS').val(form_idx);
+        });
+         // Initialize new person input to disabled
         new_form.slice(2,8).prop('disabled', true);
+        // Append all new elements to the DOM
+        var h5Element = $('<h5 style="align-self: center;padding-bottom: 1%;padding-left:1%;">Contributor ' + ++numContributors + '</h5>');
+        var contributorTitleDiv = $('<div class="line"></div>');
+        contributorTitleDiv.append(deleteButton);
+        contributorTitleDiv.append(h5Element);
+        parentDiv.append(contributorTitleDiv);
         parentDiv.append(new_form);
         $('#contribution-forms').append(parentDiv);
         // They get duplicated weirdly, remove extra dropdown
         $('#form_set').find('span.select2-container.select2-container--default').last().html('').remove();
         $('#form_set').find('span.select2-container.select2-container--default').last().html('').remove();
-        
         $('#id_form-TOTAL_FORMS').val(form_idx);
     });
-
-    $(document).on('click', '.delete-form', function() {
-        var form_idx = parseInt($('#id_form-TOTAL_FORMS').val());
-        $(this).parent().remove();
-        $('#id_form-TOTAL_FORMS').val(form_idx - 1);
-    });
-
+    
     var sectionDivCount = 1; 
 
     function addSectionField() {
