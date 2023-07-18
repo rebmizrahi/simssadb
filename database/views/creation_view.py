@@ -1,7 +1,7 @@
 import datetime
 from urllib import request
 from django.contrib.auth.decorators import login_required, permission_required
-from construct import ValidationError
+from django.core.exceptions import ValidationError
 from django.forms import formset_factory
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
@@ -67,7 +67,10 @@ class CreationView(FormView):
         # TODO: check titles and sections for SQL injections etc
         variant_titles = request.POST.getlist('variant_title')
         sections = request.POST.getlist('sections')
-        section_titles = request.POST.getlist('select_section')
+        select_section = request.POST.getlist('select_section')
+        variant_titles_from_db = request.POST.getlist('variant_titles_from_db')
+        sections_from_db = request.POST.getlist('sections_from_db')
+        select_section_from_db = request.POST.getlist('select_section_from_db')
 
         for key, value in request.POST.items():
             print(f'{key}: {value}')
@@ -82,19 +85,21 @@ class CreationView(FormView):
                 return self.form_invalid(form, contribution_forms)
             numform=0
             for contribution_form in contribution_forms:
-                if not (contribution_form.cleaned_data['person_range_date_death'] and \
+                if not request.POST.get('persons_from_db_list') and not \
+                (contribution_form.cleaned_data['person_range_date_death'] and \
                 contribution_form.cleaned_data['person_range_date_birth'] and \
-                contribution_form.cleaned_data['person_given_name']) and not contribution_form.cleaned_data['persons_from_db_list']:
+                contribution_form.cleaned_data['person_given_name']):
                     print(f'contribution form {numform} invalid')
                     return self.form_invalid(form, contribution_formset(request.POST))
                 numform+=1
 
             form.cleaned_data['variant_titles'] = variant_titles
             form.cleaned_data['sections'] = sections
-            form.cleaned_data['section_titles'] = section_titles
+            form.cleaned_data['select_section'] = select_section
+            form.cleaned_data['variant_titles_from_db'] = variant_titles_from_db
+            form.cleaned_data['sections_from_db'] = sections_from_db
+            form.cleaned_data['select_section_from_db'] = select_section_from_db
             form.cleaned_data['work_in_database'] = request.POST.get('work_not_in_database') == None
-            form.cleaned_data['person_in_database'] = request.POST.get('person_not_in_database') == None
-            form.cleaned_data['location_in_database'] = request.POST.get('location_not_in_database') == None
             form.cleaned_data['style_in_database'] = request.POST.get('style_not_in_database') == None
             form.cleaned_data['type_in_database'] = request.POST.get('type_not_in_database') == None
             return self.form_valid(form, contribution_forms, request)
@@ -110,7 +115,6 @@ class CreationView(FormView):
         for key in form.cleaned_data:
             print(f'{key}: {form.cleaned_data[key]}')
 
-        variant_titles = form.cleaned_data['variant_titles']
         styles = form.cleaned_data['genre_as_in_style']
         types = form.cleaned_data['genre_as_in_type']
         instruments = form.cleaned_data['instruments']
@@ -119,6 +123,7 @@ class CreationView(FormView):
             sacred_or_secular = None
         if form.cleaned_data['work_in_database'] == True:
             work = form.cleaned_data['title_from_db'].first()
+            variant_titles = form.cleaned_data['variant_titles_from_db']
             sections = form.cleaned_data['sections_from_db']
             section_titles = form.cleaned_data['select_section_from_db']
             if len(variant_titles) != 0:
@@ -131,6 +136,7 @@ class CreationView(FormView):
             work.save()
         else:
             title = form.cleaned_data['title']
+            variant_titles = form.cleaned_data['variant_titles']
             sections = form.cleaned_data['sections']
             section_titles = form.cleaned_data['select_section']
             titles = [title] 
@@ -145,7 +151,11 @@ class CreationView(FormView):
             work.save()            
 
         # Create sections
+        print(len(sections))
         for i in range(len(sections)):
+            print('i:  '+ str(i))
+            print(sections)
+            print(section_titles)
             if sections[i] == '':
                 continue
             count = section_titles[i]
@@ -161,37 +171,31 @@ class CreationView(FormView):
         # Create contributions
         contribution_form_count = 0
         for form in contribution_forms:
-            # Fetch or create the person
-            print(form.cleaned_data['persons_from_db_list'])
-            if form.cleaned_data['persons_from_db_list']:
+            # Try to fetch, else create, the person
+            try:
+                # Assume contributor chosen from database
                 person = form.cleaned_data['persons_from_db_list'].get(contribution_form_count)
-                contribution_form_count += 1
-            else:
+            except KeyError or IndexError:
                 person_given_name = form.cleaned_data['person_given_name']
                 person_surname = form.cleaned_data['person_surname']
-                person, created = Person.objects.get_or_create(
+                try:
+                    person, created = Person.objects.get_or_create(
                                     given_name=person_given_name,
-                                    surname=person_surname)       
+                                    surname=person_surname)     
+                except ValidationError:
+                    # No contributor given- skip this form
+                    continue  
                 range_date_birth = form.cleaned_data.get('person_range_date_birth')
                 birth_date_from, birth_date_to = range_date_birth.lower, range_date_birth.upper
                 range_date_death = form.cleaned_data.get('person_range_date_death')
                 death_date_from, death_date_to = range_date_death.lower, range_date_death.upper
-                # Old way of doing it, with datetime:
-                # if date:
-                #     date_from = datetime.date(form.cleaned_data['date'].lower, 1, 1) if form.cleaned_data['date'].lower else None
-                #     date_to = datetime.date(form.cleaned_data['date'].upper, 1, 2) if form.cleaned_data['date'].upper else None
-                # else:
-                #     date_from = None
-                #     date_to = None
-
                 person.range_date_birth = (birth_date_from, birth_date_to)
                 person.range_date_death = (death_date_from, death_date_to)
                 person.save()
-            
+    
             role = form.cleaned_data.get('role')
             certainty = form.cleaned_data.get('certainty_of_attribution')
             location = form.cleaned_data.get('location')
-            
             date = (date.lower, date.upper) if form.cleaned_data.get('date') else None
             
             contribution = ContributionMusicalWork(person=person,
@@ -201,7 +205,9 @@ class CreationView(FormView):
                                         location=location,
                                         contributed_to_work=work)
             contribution.save()
-            request.session['work_id'] = work.id
+            contribution_form_count += 1
+
+        request.session['work_id'] = work.id
         return HttpResponseRedirect('/file-create/')
 
     def form_invalid(self, form, contribution_forms):

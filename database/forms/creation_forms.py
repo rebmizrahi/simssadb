@@ -37,7 +37,7 @@ class ContributionForm(forms.Form):
     #     return cleaned_data
     
     person_from_db = forms.ModelMultipleChoiceField(
-        label="Contributor's Name*",
+        label="Contributor's Name",
         required=False,
         queryset=Person.objects.all().order_by("surname"),
         widget=autocomplete.ModelSelect2(
