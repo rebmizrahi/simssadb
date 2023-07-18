@@ -58,12 +58,12 @@ class CreationView(FormView):
             key+=1
         except: 
             pass
-        post_data['person_from_db'] = persons
+        post_data['persons_from_db_list'] = persons
         request.POST = post_data
+        
         # I'm getting the variant titles and sections before validation
         # because when the is_valid() method is called, the lists of
         # variant_titles and sections are transformed onto single values
- 
         # TODO: check titles and sections for SQL injections etc
         variant_titles = request.POST.getlist('variant_title')
         sections = request.POST.getlist('sections')
@@ -84,14 +84,19 @@ class CreationView(FormView):
             for contribution_form in contribution_forms:
                 if not (contribution_form.cleaned_data['person_range_date_death'] and \
                 contribution_form.cleaned_data['person_range_date_birth'] and \
-                contribution_form.cleaned_data['person_given_name']) and not contribution_form.cleaned_data['person_from_db']:
-                    print('contribution form ' + numform + ' invalid')
+                contribution_form.cleaned_data['person_given_name']) and not contribution_form.cleaned_data['persons_from_db_list']:
+                    print(f'contribution form {numform} invalid')
                     return self.form_invalid(form, contribution_formset(request.POST))
                 numform+=1
 
             form.cleaned_data['variant_titles'] = variant_titles
             form.cleaned_data['sections'] = sections
             form.cleaned_data['section_titles'] = section_titles
+            form.cleaned_data['work_in_database'] = request.POST.get('work_not_in_database') == None
+            form.cleaned_data['person_in_database'] = request.POST.get('person_not_in_database') == None
+            form.cleaned_data['location_in_database'] = request.POST.get('location_not_in_database') == None
+            form.cleaned_data['style_in_database'] = request.POST.get('style_not_in_database') == None
+            form.cleaned_data['type_in_database'] = request.POST.get('type_not_in_database') == None
             return self.form_valid(form, contribution_forms, request)
         else:
             return self.form_invalid(form, contribution_forms)
@@ -112,11 +117,17 @@ class CreationView(FormView):
         sacred_or_secular = form.cleaned_data['sacred_or_secular']
         if not sacred_or_secular:
             sacred_or_secular = None
-        if form.cleaned_data['title_from_db'].first() is not None:
+        if form.cleaned_data['work_in_database'] == True:
             work = form.cleaned_data['title_from_db'].first()
             sections = form.cleaned_data['sections_from_db']
             section_titles = form.cleaned_data['select_section_from_db']
-            work.variant_titles = variant_titles + work.variant_titles
+            if len(variant_titles) != 0:
+                # Remove repeats regardless of case
+                for variant_title in variant_titles:
+                    lower_variant_title = variant_title.lower()
+                    if lower_variant_title in [title.lower() for title in work.variant_titles]:
+                        variant_titles.remove(variant_title)
+                work.variant_titles = variant_titles + work.variant_titles
             work.save()
         else:
             title = form.cleaned_data['title']
@@ -135,6 +146,8 @@ class CreationView(FormView):
 
         # Create sections
         for i in range(len(sections)):
+            if sections[i] == '':
+                continue
             count = section_titles[i]
             entry = sections[i]
             section = Section(title=entry, musical_work=work)
@@ -146,11 +159,13 @@ class CreationView(FormView):
                 part = Part(written_for=instrument, section=section)
                 part.save()
         # Create contributions
+        contribution_form_count = 0
         for form in contribution_forms:
             # Fetch or create the person
-            print(form.cleaned_data['person_from_db'])
-            if form.cleaned_data['person_from_db']:
-                person = form.cleaned_data['person_from_db'].first()
+            print(form.cleaned_data['persons_from_db_list'])
+            if form.cleaned_data['persons_from_db_list']:
+                person = form.cleaned_data['persons_from_db_list'].get(contribution_form_count)
+                contribution_form_count += 1
             else:
                 person_given_name = form.cleaned_data['person_given_name']
                 person_surname = form.cleaned_data['person_surname']
@@ -202,7 +217,7 @@ class CreationView(FormView):
             print(contribution_form.errors)
             for key in contribution_form.cleaned_data:
                 print(f'{key}: {contribution_form.cleaned_data.get(key)}')
-        error_message = "Please correct the form before resubmitting. All fields marked with * are required. For date ranges, if the date is known, you may enter it in a single box."
+        error_message = "Please correct the form before resubmitting. All fields marked with * are required, unless the field is grayed out. For date ranges, if the date is known, you may enter it in a single box."
         return self.render_to_response(
             self.get_context_data(error_message=error_message,
                                   form=form,
