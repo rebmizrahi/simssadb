@@ -27,9 +27,16 @@ from database.models.type_of_section import TypeOfSection
 
 @admin.register(MusicalWork)
 class MusicalWorkAdmin(admin.ModelAdmin):
-    list_display = ("date_created","date_updated")
+    # Add the custom method to get the first element of variant_titles
+    def main_title(self, obj):
+        if obj.variant_titles:
+            return obj.variant_titles[0]
+        else:
+            return None
+
+    list_display = ("main_title", "date_created", "date_updated")  # Add the custom method here
     search_fields = ("variant_titles",)
-    list_filter = ("date_created","date_updated")
+    list_filter = ("date_created", "date_updated")
 
 @admin.register(Section)
 class SectionAdmin(admin.ModelAdmin):
