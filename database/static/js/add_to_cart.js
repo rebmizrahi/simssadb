@@ -25,7 +25,7 @@ function AddFileToCart(file_id, button) {
         dataType: "json",
         data: JSON.stringify({file_id: file_id}),
         success: function(data){
-            message = "The file " + data.file_name + " was addded to your download cart"
+            message = "The file " + data.file_name + " was added to your download cart"
             showalert(message, "alert-success");
             button.disabled = true;
         },
@@ -39,7 +39,7 @@ function AddCorpusToCart(corpus_id) {
         dataType: "json",
         data: JSON.stringify({corpus_id: corpus_id}),
         success: function(data){
-            message = "All the files in the corpus " + data.corpus_name + " were addded to your download cart"
+            message = "All the files in the corpus " + data.corpus_name + " were added to your download cart"
             showalert(message, "alert-success")
         },
     });
@@ -52,7 +52,7 @@ function AddSearchResultsToCart(search_results_file_ids) {
         dataType: "json",
         data: JSON.stringify({search_results_file_ids: search_results_file_ids}),
         success: function(data){
-            message = "All the files from the search results were addded to your download cart"
+            message = "All the files from the search results were added to your download cart"
             showalert(message, "alert-success")
         },
     });
