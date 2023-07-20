@@ -3,6 +3,8 @@ import sys
 import csv
 import fnmatch
 from datetime import date
+import time
+import threading
 original_cwd = os.getcwd()  # change back to the original path for the next script
 
 proj_path = "../../"
@@ -103,9 +105,30 @@ def parseEncoder(software_input, text_input):
     else:
         return None
 
+def process_batch(start_index, end_index, file_list):
+    for i in range(start_index, end_index):
+        file_list[i].save()
+
+# Split the files into batches and process them concurrently
+def process_files_in_batches(file_list, batch_size):
+    num_files = len(file_list)
+    num_threads = num_files // batch_size
+    threads = []
+    for i in range(num_threads):
+        start_index = i * batch_size
+        end_index = start_index + batch_size
+        thread = threading.Thread(target=process_batch, args=(start_index, end_index, file_list))
+        threads.append(thread)
+        thread.start()
+    for thread in threads: # Wait for threads to finish, then join
+        thread.join()
 
 if __name__ == "__main__":
+    start = time.time()
     print('Adding sources...')
+    file_list = []
+    file_list_for_processing = []
+    parsable_format = ['midi', 'mid', 'abc', 'krn', 'ly', 'mei', 'xml']
     mediatype = 'symbolic_music/'
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
@@ -271,8 +294,16 @@ if __name__ == "__main__":
                         file=file_import,
                         file_format=file_type_input[index])
                     symbolicfile.file.name = file_input[index2]
-                    symbolicfile.save()
-
+                    file_list.append(symbolicfile)
                     file_import.closed
                     file_local.closed
+        batch_size = 4
+        process_files_in_batches(file_list, batch_size)
+        end = time.time()
+        print(f'Time taken for batch size {batch_size} for {len(file_list)} files: {end-start}')
+
     os.chdir(original_cwd)
+
+        # Time taken for batch size 5 for 40 files: 230.09467148780823
+        # Time taken for batch size 3 for 40 files: 229.57310581207275
+        # Time for no threading - at least triple the time

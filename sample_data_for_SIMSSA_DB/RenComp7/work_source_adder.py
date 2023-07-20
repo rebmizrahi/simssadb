@@ -5,7 +5,7 @@ from datetime import date
 import csv
 
 proj_path = "../../"
-original_cwd = os.getcwd()
+
 # This is so mpythoy local_settings.py gets loaded.
 os.chdir(proj_path)
 
@@ -35,7 +35,7 @@ from database.models.genre_as_in_style import GenreAsInStyle
 from database.models.contribution_musical_work import ContributionMusicalWork
 from database.models.genre_as_in_type import GenreAsInType
 from database.models.source_instantiation import SourceInstantiation
-from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource
+from sample_data_for_SIMSSA_DB.Florence_164.work_source_adder import parseSource, process_files_in_batches 
 
 
 def createContribution(p, work):
@@ -211,13 +211,13 @@ def addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url
             file=file_import,
             file_format=file_extension)
         symbolicfile.file.name = file_name_all
-        symbolicfile.save()
+        # symbolicfile.save()
         file_import.closed
         file_local.closed
         header.append([os.path.join(folder_name,
                                     file_name_all), given_name_input, surname_input, file_name, section_name_format,
                        "RenComp7"])
-    return counter, header
+    return counter, header, symbolicfile
 
 
 if __name__ == "__main__":
@@ -226,13 +226,10 @@ if __name__ == "__main__":
     mediatype = 'symbolic_music/'
     mediapath = getattr(settings, "MEDIA_ROOT", None)
     mediapath = mediapath + mediatype
+    os.chdir(os.path.dirname(os.path.abspath(__file__)))
     counter = 0
-    print('os.getcwd', os.getcwd())
-    print('the current file directory', os.path.abspath(__file__))
-    if os.getcwd() == '/':
-        os.chdir(os.path.join('code', 'simssadb', 'sample_data_for_SIMSSA_DB', 'RenComp7'))
-    all_folders = os.listdir(os.getcwd())
-    print('all folders', all_folders)
+    all_folders = os.listdir(os.path.join(os.getcwd()))
+    file_list = []
     # Create CSV file to export the metadata to check
     header = [
         ['File Name', 'Composer Given Name', 'Composer Surname', 'Musical Work Name', 'Section Name',
@@ -243,7 +240,6 @@ if __name__ == "__main__":
                 in folder_name:
             continue
         else:
-            print('current folder', folder_name)
             if folder_name == 'Giovanni_Pierluigi_da_Palestrina':  # this one has different syntax
                 given_name_input = 'Giovanni Pierluigi da'
                 surname_input = 'Palestrina'
@@ -290,11 +286,13 @@ if __name__ == "__main__":
                 death_input = '1611'
                 viaf_url_input = 'http://viaf.org/viaf/32192606'
 
-            counter, header = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
+            counter, header, symbolicfile = addPiece(given_name_input, surname_input, birth_input, death_input, viaf_url_input,
                                        folder_name, counter, header)
-
-    # with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB",
-    #                        'RenComp7_metadata.csv'), 'w') as csvFile:
-    #     writer = csv.writer(csvFile)
-    #     writer.writerows(header)
-    os.chdir(original_cwd)
+            file_list.append(symbolicfile)
+    
+    batch_size = 5
+    process_files_in_batches(file_list, batch_size)
+    with open(os.path.join(os.path.dirname(os.path.dirname(os.getcwd())), "sample_data_for_SIMSSA_DB",
+                           'RenComp7_metadata.csv'), 'w') as csvFile:
+        writer = csv.writer(csvFile)
+        writer.writerows(header)
