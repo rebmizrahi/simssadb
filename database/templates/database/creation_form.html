@@ -236,7 +236,7 @@
         form_idx = $('#id_form-TOTAL_FORMS').val();
         form_idx = parseInt(form_idx) + 1;
         var parentDiv = $('<div class="contribution-form" id="contribution-form-' + form_idx + '"></div>');
-        // Duplicate form with unique ids for autocomplete widgets
+        // Duplicate form with unique ids for all widgets
         var new_form = $($('.contribution-form').html().replace(/__prefix__/g, form_idx)
             .replace(/id_form-0-person_from_db/g, 'id_form-0-person_from_db-' + form_idx)
             .replace(/id_form-0-location/g, 'id_form-0-location-' + form_idx)
@@ -375,7 +375,7 @@
         var locationCheckbox = $('#check-location');
         locationCheckbox.on('click', function() {
             var locationInput = $('#add-location-input');
-            var locationButton = $('#add-location-button');
+            var locationButton = $('.add-location-button');
             locationInput.prop('disabled', !locationCheckbox.is(':checked'));
             locationButton.prop('disabled', !locationCheckbox.is(':checked'));
         });
@@ -404,6 +404,7 @@
           if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
               console.log("New type created successfully!");
+              document.getElementById('add-type-input').value = '';
             } else {
               console.log("Error creating new type:", xhr.responseText);
             }
@@ -411,7 +412,6 @@
         };
         xhr.send('typeName=' + encodeURIComponent(newTypeName));
         xhr.send('newObjectForAutocomplete=' + encodeURIComponent('True'));
-        newTypeName.value = '';
       });
     });
 
@@ -430,6 +430,7 @@
           if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
               console.log("New style created successfully!");
+              document.getElementById('add-style-input').value = '';
             } else {
               console.log("Error creating new style:", xhr.responseText);
             }
@@ -437,7 +438,6 @@
         };
         xhr.send('styleName=' + encodeURIComponent(newStyleName));
         xhr.send('newObjectForAutocomplete=' + encodeURIComponent('True'));
-        newStyleName.value = '';
       });
     });
 
@@ -456,6 +456,7 @@
           if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
               console.log("New instrument created successfully!");
+              document.getElementById('add-instrument-input').value = '';
             } else {
               console.log("Error creating new instrument:", xhr.responseText);
             }
@@ -463,7 +464,6 @@
         };
         xhr.send('instrumentName=' + encodeURIComponent(newInstrumentName));
         xhr.send('newObjectForAutocomplete=' + encodeURIComponent('True'));
-        newInstrumentName.value = '';
       });
     });
 
@@ -472,22 +472,23 @@
       var addButton = document.querySelectorAll('.add-location-button');
       addButton.addEventListener('click', function(event) {
         event.preventDefault();
-        var newInstrumentName = document.getElementById('add-instrument-input').value;
+        var newInstrumentName = document.getElementById('add-location-input').value;
         // Send AJAX request to the server
         var xhr = new XMLHttpRequest();
-        xhr.open('POST', "{% url 'create-instrument-function' %}", true);
+        xhr.open('POST', "{% url 'create-geographic-area-function' %}", true);
         xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
         xhr.setRequestHeader('X-CSRFToken', '{{ csrf_token }}');
         xhr.onreadystatechange = function() {
           if (xhr.readyState === XMLHttpRequest.DONE) {
             if (xhr.status === 200) {
-              console.log("New instrument created successfully!");
+              console.log("New location created successfully!");
+              document.getElementById('add-location-input').value = '';
             } else {
-              console.log("Error creating new instrument:", xhr.responseText);
+              console.log("Error creating new location:", xhr.responseText);
             }
           }
         };
-        xhr.send('instrumentName=' + encodeURIComponent(newInstrumentName));
+        xhr.send('locationName=' + encodeURIComponent(newInstrumentName));
         xhr.send('newObjectForAutocomplete=' + encodeURIComponent('True'));
       });
     });
