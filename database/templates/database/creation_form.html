@@ -31,24 +31,24 @@
             {{ form.title_from_db }}
             <br><br>
             <div class="multiple-entry"> 
-                <div class="line">
+                <div class="flex-row">
                     {{ form.variant_titles_from_db.label_tag }}
                     {{ form.variant_titles_from_db_tooltips }}
                 </div>
                 {{ form.variant_titles_from_db }}
             </div>
             <div class="multiple-entry"> 
-                <div class="line"> 
+                <div class="flex-row"> 
                     {{ form.sections_from_db.label_tag }}
                     {{ form.sections_from_db_tooltips }}
                 </div>
                 <div id="select-div-parent" style="display: flex; flex-direction: column;">
-                    <div id="select-div">
+                    <div id="select-div" class="flex-row">
                         {{ form.select_section_from_db }}
                         {{ form.sections_from_db }}
                     </div>
                 </div>
-                <div style="display: flex; flex-direction: row;">
+                <div class="flex-row">
                     <input class="btn btn-success btn-sm" type="button" value="+" onclick="addSectionField()">
                     <input class="btn btn-danger btn-sm" type="button" value="-" onclick="deleteSectionField()">
                 </div>
@@ -70,19 +70,19 @@
         <div class="multiple-entry"> 
             {{ form.sections.label_tag }}
             <div id="select-div-parent" style="display: flex; flex-direction: column;">
-                <div id="select-div">
+                <div id="select-div" class="flex-row">
                     {{ form.select_section }}
                     {{ form.sections }}
                 </div>
             </div>
-            <div class="line">
+            <div class="flex-row">
                 <input class="btn btn-success btn-sm" type="button" value="+" onclick="addSectionField()">
                 <input class="btn btn-danger btn-sm" type="button" value="-" onclick="deleteSectionField()">
             </div>
         </div>
     </div>
     <br>
-    <div class="line">
+    <div class="flex-row">
         <h3> Contributions </h3> {{ form.contribution_tooltips }} 
     </div>
     {{ contribution_form.management_form }}
@@ -96,47 +96,47 @@
             <div id="contribution-forms">
             {% for contribution_form in contribution_form %}
                 <div class="contribution-form" id="contribution-form">
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.person_from_db.label_tag }}
                         {{ contribution_form.person_from_db }}
                     </div>
-                    <div class="contribution-form-field form-check">
+                    <div class="contribution-form-field flex-row form-check">
                         <input class="form-check-input person-check" id="check-contributor" type="checkbox" value="" name="person_not_in_database">
                         <label class="form-check-label" for="check-contributor">Person is not in database</label>
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.person_given_name.label_tag }}
                         {{ contribution_form.person_given_name }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.person_surname.label_tag }}
                         {{ contribution_form.person_surname }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.person_range_date_birth.label_tag }}
                         {{ contribution_form.person_range_date_birth }}
                         {{ contribution_form.birth_info }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.person_range_date_death.label_tag }}
                         {{ contribution_form.person_range_date_death }}
                         {{ contribution_form.death_info }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.role.label_tag }}
                         {{ contribution_form.role }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.certainty_of_attribution.label_tag }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.certainty_of_attribution }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.location.label_tag }}
                         {{ contribution_form.location }}
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         <div class="form-check" style="min-width: 23vh;">
                             <input class="form-check-input location-check" type="checkbox" value="" id="check-location" name="location_not_in_database">
                             <label class="form-check-label" for="check-location">
@@ -148,7 +148,7 @@
                             <button class="btn btn-success btn-sm add-more-button add-location-button">Add Location</button>
                         </div>
                     </div>
-                    <div class="contribution-form-field">
+                    <div class="contribution-form-field flex-row">
                         {{ contribution_form.date.label_tag }}
                         {{ contribution_form.date }}
                     </div>
@@ -163,7 +163,7 @@
         <p>
             What type of piece is this? (e.g., song, symphony, motet)
         </p>
-        <div class="autocomplete-add-container">
+        <div class="autocomplete-add-container flex-row">
             {{ form.genre_as_in_type }}
             <div class="autocomplete-add">
                 <input type="text" class="add-more-input" id="add-type-input"/>
@@ -182,14 +182,14 @@
         <p>
             What style is this piece? (e.g., classical, jazz)
         </p>
-        <div class="autocomplete-add-container">
+        <div class="autocomplete-add-container flex-row">
             {{ form.genre_as_in_style }}
             <div class="autocomplete-add">
                 <input type="text" class="add-more-input" id="add-style-input"/>
                 <button class="btn btn-success btn-sm add-more-button" id="add-style-button">Add New Style</button>
             </div>
         </div>
-        <div class="line">
+        <div class="flex-row">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" value="" id="flexCheckStyle" name="style_not_in_database">
                 <label class="form-check-label" for="flexCheckStyle">
@@ -208,7 +208,7 @@
             Please enter the instruments or voices below.
         </p>
         {{ form.instruments.label_tag }}
-        <div class="autocomplete-add-container">
+        <div class="autocomplete-add-container flex-row">
             {{ form.instruments }}
             <div class="autocomplete-add">
                 <input type="text" class="add-more-input" id="add-instrument-input"/>
@@ -515,7 +515,7 @@
 
 
 <style>
-    .line {
+    .flex-row {
         display: flex; 
         flex-direction: row;
     }
@@ -524,30 +524,21 @@
     }
     .contribution-form-field{
         margin-bottom: 1.5vh;
-        display: flex;
-        flex-direction: row;
         align-items: center;
     }        
     .btn{   
-        margin-right: 1%;
         margin-bottom: 2%;
     }
-
-    #id_title{
-        margin-bottom:2%;
-    }
-    #section_title-div, #variant_title-div, #variant_title_from_db-div{
+    #section_title-div, #select-div, #variant_title-div, #variant_title_from_db-div{
         margin-bottom: 1%;
     }
     [id^="id_form-"][id$="-person_range_date_birth_0"],
     [id^="id_form-"][id$="-person_range_date_death_0"],
     [id^="id_form-"][id$="date_0"],
-    .input,#id_form-0-date_0{
+    .input,#id_form-0-date_0,.btn{
         margin-right: 1%;
     }
     .autocomplete-add-container{
-        display: flex;
-        flex-direction: row;
         align-items: stretch;
         justify-content: space-between;
     }
@@ -568,27 +559,11 @@
         padding-bottom: 5px;
         min-width: 55%;
     }
-    .add-location{
-        display: flex;
-        flex-direction: row;
-        align-items: baseline;
-        justify-content: flex-start;
-    }
     .select2-selection {
         min-height: 4vh !important;
     }
     .selection{
         width: 60vh; /* overrides default which is in px */
-    }
-    .errorlist {
-        font-size: smaller;
-        font-style: italic;
-        color: darkred;
-    }
-    #select-div {
-        margin-bottom: 1%;
-        display: flex;
-        flex-direction: row;
     }
     [id^="id_select_section"]{
         margin-right: 1%;
@@ -615,36 +590,11 @@
     [id^="check-contributor"] {
         align-self: first baseline;
     }
-    /* bootstrap class not showing */
-    .form-select {
-        display: inline-block;
-        position: relative;
-        padding: .375rem .75rem;
-        line-height: 1.5;
-        color: #495057;
-        vertical-align: middle;
-        background-color: #fff;
-        background-clip: padding-box;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    }
-    .form-select:focus {
-        border-color: #80bdff;
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-    .form-select[multiple],
-    .form-select[size]:not([size="1"]) {
-        height: auto;
-        padding-right: 0.75rem;
-        background-image: none;
-    }
     .contribution-form label {
         margin-bottom: 0;
         margin-right: 1%;
     }
-    [id$="-certainty_of_attribution"] {
+    [id$="id_form-0-certainty_of_attribution"] {
         width: 50vh;
         margin-left: 1%;
     }
