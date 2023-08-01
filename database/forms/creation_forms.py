@@ -23,20 +23,8 @@ from database.widgets.info_tooltip_widget import InfoTooltipWidget
 
 
 class ContributionForm(forms.Form):
-    # def clean(self):
-    #     cleaned_data = super(ContributionForm, self).clean()
-    #     key = 0
-    #     person_from_db = []
-    #     try:
-    #         # Do not order by surname, QuerySet is already ordered properly
-    #         person_from_db.append(Person.objects.all()[int(self.data[f'form-{key}-person_from_db'])-1])
-    #         key+=1
-    #     except:
-    #         pass
-    #     cleaned_data['person_from_db'] = person_from_db  
-    #     return cleaned_data
     
-    person_from_db = forms.ModelMultipleChoiceField(
+    person_from_db_1 = forms.ModelMultipleChoiceField(
         label="Contributor's Name",
         required=False,
         queryset=Person.objects.all().order_by("surname"),
@@ -46,11 +34,11 @@ class ContributionForm(forms.Form):
         ),
     )
 
-    person_given_name = forms.CharField(label="Contributor's Given Name*", required=False)
+    person_given_name_1 = forms.CharField(label="Contributor's Given Name*", required=False)
     
-    person_surname = forms.CharField(label="Contributor's Surname", required=False)
+    person_surname_1 = forms.CharField(label="Contributor's Surname", required=False)
     
-    person_range_date_birth = IntegerRangeField(label="Date of Birth (range)*", required=False)
+    person_range_date_birth_1 = IntegerRangeField(label="Date of Birth (range)*", required=False)
     
     birth_info = forms.CharField(
         label="",
@@ -58,7 +46,7 @@ class ContributionForm(forms.Form):
         widget=InfoTooltipWidget(tooltip_text="Please enter the birth year of the contributor in either input box. If the specific year is not known, please enter a range."),
     )
    
-    person_range_date_death = IntegerRangeField(label="Date of Death (range)*", required=False)
+    person_range_date_death_1 = IntegerRangeField(label="Date of Death (range)*", required=False)
     
     death_info = forms.CharField(
         label="",
@@ -66,7 +54,7 @@ class ContributionForm(forms.Form):
         widget=InfoTooltipWidget(tooltip_text="Please enter the birth year of the contributor in either input box. If the specific year is not known, please enter a range."),
     )
     
-    role = forms.ChoiceField(
+    role_1 = forms.ChoiceField(
         choices=(
             ("COMPOSER", "Composer"),
             ("ARRANGER", "Arranger"),
@@ -74,33 +62,33 @@ class ContributionForm(forms.Form):
             ("TRANSCRIBER", "Transcriber"),
             ("IMPROVISER", "Improviser"),
             ("PERFORMER", "Performer"),
-        )
+        ),
+        label="Role"
     )
 
-    certainty_of_attribution = forms.NullBooleanField(
+    certainty_of_attribution_1 = forms.NullBooleanField(
         required=False,
         widget=forms.RadioSelect(
             choices=((True, "Certain"), (False, "Uncertain"), (None, "Unknown"))
         ),
+        label="Certainty of attribution"
     )
-    location = forms.ModelChoiceField(
+
+    location_1 = forms.ModelChoiceField(
         required=False,
         queryset=GeographicArea.objects.all().order_by("name"),
         widget=autocomplete.ModelSelect2(
             url="/geographicarea-autocomplete/", attrs={"class": "form-control autocomplete-select2",
                                                         "name": "location"}
         ),
+        label="Location"
     )
-    date = IntegerRangeField(label="Date of Contribution (range)", required=False)
+
+    date_1 = IntegerRangeField(label="Date of Contribution (range)", required=False)
     
   
 class WorkInfoForm(forms.Form):
-    # def clean(self):
-    #     cleaned_data = super(WorkInfoForm, self).clean()
-    #     title_key = int(self.data['title_from_db'][0])
-    #     cleaned_data['title_from_db'] = MusicalWork.objects.all()[title_key]
-    #     return cleaned_data
-
+    
     contribution_tooltips = forms.CharField(
         label="",
         required=False,
