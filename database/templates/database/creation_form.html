@@ -103,7 +103,7 @@
                         {{ contribution_form.person_from_db_1 }}
                     </div>
                     <div class="contribution-form-field flex-row form-check">
-                        <input class="form-check-input check-contributor" id="check-contributor_1" type="checkbox" value="" name="person_not_in_database">
+                        <input class="form-check-input check-contributor" id="check-contributor_1" type="checkbox" value="" name="person_not_in_database_1">
                         <label class="form-check-label" for="check-contributor_1">Person is not in database</label>
                     </div>
                     <div class="contribution-form-field flex-row">
@@ -509,8 +509,7 @@
         }
     }
 
-  </script>
-
+</script>
 
 <style>
     .flex-row{
@@ -563,7 +562,7 @@
         margin-right: 1%;
         width: 25%
     }
-    .info-tooltip-widget {
+    .info-tooltip-widget, [id^="id_form-0-person_range"][id$="_1"], [id^="id_form-0-certainty_of_attribution"] {
         margin-left: 1%;
     }
     #add-type-input,#add-style-input,#add-instrument-input,
