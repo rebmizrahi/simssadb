@@ -3,6 +3,7 @@
 {% block content %}
 
 <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <script type="text/javascript" src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
@@ -63,6 +64,7 @@
         </div>
         {{ form.title.label_tag }}
         {{ form.title }}
+        <br>
         <div class="multiple-entry">
             {{ form.variant_titles.label_tag }}
             <div id="variant-title-div">{{ form.variant_titles }}</div>
@@ -95,62 +97,62 @@
             </p>
             <div id="contribution-forms">
             {% for contribution_form in contribution_form %}
-                <div class="contribution-form" id="contribution-form">
+                <div class="contribution-form" id="contribution-form_1">
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.person_from_db.label_tag }}
-                        {{ contribution_form.person_from_db }}
+                        {{ contribution_form.person_from_db_1.label_tag }}
+                        {{ contribution_form.person_from_db_1 }}
                     </div>
                     <div class="contribution-form-field flex-row form-check">
-                        <input class="form-check-input person-check" id="check-contributor" type="checkbox" value="" name="person_not_in_database">
-                        <label class="form-check-label" for="check-contributor">Person is not in database</label>
+                        <input class="form-check-input check-contributor" id="check-contributor_1" type="checkbox" value="" name="person_not_in_database">
+                        <label class="form-check-label" for="check-contributor_1">Person is not in database</label>
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.person_given_name.label_tag }}
-                        {{ contribution_form.person_given_name }}
+                        {{ contribution_form.person_given_name_1.label_tag }}
+                        {{ contribution_form.person_given_name_1 }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.person_surname.label_tag }}
-                        {{ contribution_form.person_surname }}
+                        {{ contribution_form.person_surname_1.label_tag }}
+                        {{ contribution_form.person_surname_1 }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.person_range_date_birth.label_tag }}
-                        {{ contribution_form.person_range_date_birth }}
+                        {{ contribution_form.person_range_date_birth_1.label_tag }}
+                        {{ contribution_form.person_range_date_birth_1 }}
                         {{ contribution_form.birth_info }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.person_range_date_death.label_tag }}
-                        {{ contribution_form.person_range_date_death }}
+                        {{ contribution_form.person_range_date_death_1.label_tag }}
+                        {{ contribution_form.person_range_date_death_1 }}
                         {{ contribution_form.death_info }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.role.label_tag }}
-                        {{ contribution_form.role }}
+                        {{ contribution_form.role_1.label_tag }}
+                        {{ contribution_form.role_1 }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.certainty_of_attribution.label_tag }}
+                        {{ contribution_form.certainty_of_attribution_1.label_tag }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.certainty_of_attribution }}
+                        {{ contribution_form.certainty_of_attribution_1 }}
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.location.label_tag }}
-                        {{ contribution_form.location }}
+                        {{ contribution_form.location_1.label_tag }}
+                        {{ contribution_form.location_1 }}
                     </div>
                     <div class="contribution-form-field flex-row">
                         <div class="form-check" style="min-width: 23vh;">
-                            <input class="form-check-input location-check" type="checkbox" value="" id="check-location" name="location_not_in_database">
-                            <label class="form-check-label" for="check-location">
+                            <input class="form-check-input location-check" type="checkbox" value="" id="check-location_1" name="location_not_in_database">
+                            <label class="form-check-label" for="check-location_1">
                             <p>Location not in database</p>
                             </label>
                         </div>
                         <div class="autocomplete-add" style="justify-content: center;">
-                            <input type="text" placeholder="e.g. Court of Marie V" class="add-more-input form-control" id="add-location-input"/>
-                            <button class="btn btn-success btn-sm add-more-button add-location-button">Add Location</button>
+                            <input type="text" placeholder="e.g. Court of Marie V" class="add-more-input form-control" id="add-location-input_1"/>
+                            <button class="btn btn-success btn-sm add-more-button" id="add-location-button_1">Add Location</button>
                         </div>
                     </div>
                     <div class="contribution-form-field flex-row">
-                        {{ contribution_form.date.label_tag }}
-                        {{ contribution_form.date }}
+                        {{ contribution_form.date_1.label_tag }}
+                        {{ contribution_form.date_1 }}
                     </div>
                 </div>
             {% endfor %}
@@ -233,29 +235,31 @@
     var form_idx = 1;
     var numContributors = 1;
     $('#add_more').click(function() {
-        form_idx = $('#id_form-TOTAL_FORMS').val();
-        form_idx = parseInt(form_idx) + 1;
+        original_form_idx = 1;
+        form_idx++;
         var parentDiv = $('<div class="contribution-form" id="contribution-form-' + form_idx + '"></div>');
         // Duplicate form with unique ids for all widgets
-        var new_form = $($('.contribution-form').html().replace(/__prefix__/g, form_idx)
-            .replace(/id_form-0-person_from_db/g, 'id_form-0-person_from_db-' + form_idx)
-            .replace(/id_form-0-location/g, 'id_form-0-location-' + form_idx)
-            .replace(/check-contributor/g, 'check-contributor-' + form_idx)
-            .replace(/check-location/g, 'check-location-' + form_idx)
-            .replace(/add-location-input/g, 'add-location-input-' + form_idx)
-            .replace(/add-location-button/g, 'add-location-button-' + form_idx));
+        var regex = new RegExp('_' + original_form_idx + '\\b', 'g');
+        var regexRange0 = new RegExp('_' + original_form_idx + '_0' + '\\b', 'g');
+        var regexRange1 = new RegExp('_' + original_form_idx + '_1' + '\\b', 'g');
+        var new_form = $($('.contribution-form').html().replace(regex, '_' + form_idx)
+            .replace(regexRange0, '_' + form_idx + '_0').replace(regexRange1, '_' + form_idx + '_1'));
         new_form.find('span[data-select2-id]').attr('data-select2-id', form_idx);
+        // Init form to disabled
+        new_form.find(':input').slice(2,8).prop('disabled', true);
+        var locationInput = $('#add-location-input_' + form_idx);
+        locationInput.prop('disabled', true);
         // Listener for the new contribution form checkbox to be checked
-        new_form.find('.person-check').on('change', function() {
+        new_form.find('.check-contributor').on('change', function() {
             var cur_form = $(this).closest('.contribution-form');
             var isChecked = $(this).prop('checked');
-            cur_form.find(':input').slice(2,8).prop('disabled', !isChecked);
+            cur_form.find(':input').slice(3,9).prop('disabled', !isChecked);
         });
         new_form.find('.location-check').on('change', function() {
             var cur_form = $(this).closest('.contribution-form');
             var isChecked = $(this).prop('checked');
-            var locationInput = $('#add-location-input-' + form_idx);
-            var locationButton = $('#add-location-button-' + form_idx);
+            var locationInput = $('#add-location-input_' + form_idx);
+            var locationButton = $('#add-location-button_' + form_idx);
             locationInput.prop('disabled', !isChecked);
             locationButton.prop('disabled', !isChecked);
         });
@@ -265,7 +269,7 @@
         deleteButton.setAttribute('type', 'button');
         deleteButton.setAttribute('id', 'delete_form');
         deleteButton.setAttribute('value', '-');
-        deleteButton.setAttribute('aria-label', 'Delete form below.');
+        deleteButton.setAttribute('aria-label', 'Delete the below form.');
         deleteButton.addEventListener('click', function() {
             form_idx = $('#id_form-TOTAL_FORMS').val();
             parentDiv.remove();
@@ -273,10 +277,8 @@
             numContributors--;
             $('#id_form-TOTAL_FORMS').val(form_idx);
         });
-         // Initialize new person input to disabled
-        new_form.slice(2,8).prop('disabled', true);
         // Append all new elements to the DOM
-        var h5Element = $('<h5 style="align-self: center;padding-bottom: 1%;padding-left:1%;">Contributor ' + ++numContributors + '</h5>');
+        var h5Element = $('<h5 style="align-self: center;padding-bottom: 1%;">Contributor ' + ++numContributors + '</h5>');
         var contributorTitleDiv = $('<div class="line"></div>');
         contributorTitleDiv.append(deleteButton);
         contributorTitleDiv.append(h5Element);
@@ -325,7 +327,7 @@
     $(document).ready(function() {
         console.log(document);
         // Initialize all contributor form elements relating to person to disabled 
-        var form = document.getElementById('contribution-form');
+        var form = document.getElementById('contribution-form_1');
         var inputs = form.getElementsByTagName('input');
         for (var i = 1; i < 7; i++) {
             inputs[i].disabled = true;
@@ -372,7 +374,7 @@
             typeButton.prop('disabled', !typeCheckbox.is(':checked'));
         });
 
-        var locationCheckbox = $('#check-location');
+        var locationCheckbox = $('#check-location_' + form_idx); 
         locationCheckbox.on('click', function() {
             var locationInput = $('#add-location-input');
             var locationButton = $('.add-location-button');
@@ -380,8 +382,7 @@
             locationButton.prop('disabled', !locationCheckbox.is(':checked'));
         });
 
-        // Listen for the first contribution form checkbox to be checked
-        $('#form_set').find('.person-check').on('change', function() {
+        $('#form_set').find('#check-contributor_' + form_idx).on('change', function() {
             var cur_form = $(this).closest('.contribution-form');
             var isChecked = $(this).prop('checked');
             cur_form.find(':input').slice(2,8).prop('disabled', !isChecked);
@@ -506,16 +507,13 @@
             inputs[i].disabled = false;
             }
         }
-        }
-
-        // Example usage
-        enableDisabledInputs();
+    }
 
   </script>
 
 
 <style>
-    .flex-row {
+    .flex-row{
         display: flex; 
         flex-direction: row;
     }
@@ -532,9 +530,8 @@
     #section_title-div, #select-div, #variant_title-div, #variant_title_from_db-div{
         margin-bottom: 1%;
     }
-    [id^="id_form-"][id$="-person_range_date_birth_0"],
-    [id^="id_form-"][id$="-person_range_date_death_0"],
-    [id^="id_form-"][id$="date_0"],
+    [id^="id_form-0-person_date"],
+    [id^="id_form-0-date"],
     .input,#id_form-0-date_0,.btn{
         margin-right: 1%;
     }
@@ -559,9 +556,6 @@
         padding-bottom: 5px;
         min-width: 55%;
     }
-    .select2-selection {
-        min-height: 4vh !important;
-    }
     .selection{
         width: 60vh; /* overrides default which is in px */
     }
@@ -573,7 +567,7 @@
         margin-left: 1%;
     }
     #add-type-input,#add-style-input,#add-instrument-input,
-    [id^="id_form"]:not([id$="certainty_of_attribution"],.info-tooltip-widget) {
+    [id^="id_form"]:not([id^="id_form-0-certainty_of_attribution"],.info-tooltip-widget) {
         padding: .375rem .75rem;
         font-size: 1rem;
         line-height: 1.5;
@@ -584,9 +578,10 @@
         border-radius: .25rem;
         transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
     }
-    span.select2-selection.select2-selection--single.form-control.autocomplete-select2 {
-        min-height: 4vh !important;
-    }
+    .select2-selection, span.select2-selection.select2-selection--single.form-control.autocomplete-select2 {
+        height: -webkit-fit-content;
+        min-height: 4vh;
+    } /* this works in chrome and firefox but in safari the min-height should be ~10vh... */
     [id^="check-contributor"] {
         align-self: first baseline;
     }
@@ -594,9 +589,8 @@
         margin-bottom: 0;
         margin-right: 1%;
     }
-    [id$="id_form-0-certainty_of_attribution"] {
+    div[id^="id_form-0-certainty_of_attribution"], label[for^="id_form-0-certainty_of_attribution"] {  
         width: 50vh;
-        margin-left: 1%;
     }
     :disabled:not(button):not(.btn) {
         background-color: #e9ecef !important;
