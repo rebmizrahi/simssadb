@@ -494,17 +494,12 @@
       });
     });
 
-    // Django does not recognize disabled fields
+    // Django maybe does not recognize disabled fields .. debug
     function enableDisabledInputs() {
-        // Get all input elements in the document
         var inputs = document.querySelectorAll('input');
-
-        // Iterate through each input element
         for (var i = 0; i < inputs.length; i++) {
-            // Check if the input is disabled
             if (inputs[i].disabled) {
-            // Enable the disabled input
-            inputs[i].disabled = false;
+                inputs[i].disabled = false;
             }
         }
     }
