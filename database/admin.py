@@ -100,7 +100,7 @@ class ExtractedFeatureAdmin(admin.ModelAdmin):
 
 @admin.register(Source)
 class SourceAdmin(admin.ModelAdmin):
-    list_display = ("title","parent_source","child_source","source_instantiations","date_created","date_updated")
+    list_display = ("title","parent_source","child_source","date_created","date_updated")
     search_fields = ("title","date_created","date_updated")
     list_filter = ("date_created","date_updated")
 
