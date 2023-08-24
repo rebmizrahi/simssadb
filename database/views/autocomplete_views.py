@@ -114,13 +114,13 @@ class MusicalWorkAutocomplete(autocomplete.Select2QuerySetView):
             result = {
                 "id": str(musical_work.pk),
                 "text": musical_work.variant_titles[0],  # First element of variant_titles
-                "selected_text": musical_work.variant_titles[0],  # First element of variant_titles
+                "selected_text": musical_work.variant_titles[0],  
             }
 
             if musical_work.contributors.exists():
                 first_contributor = musical_work.contributors.first()
                 result["text"] += " - " + str(first_contributor)  # Append first contributor
-                result["selected_text"] += " - " + str(first_contributor)  # Append first contributor
+                result["selected_text"] += " - " + str(first_contributor)  
 
             results.append(result)
 
